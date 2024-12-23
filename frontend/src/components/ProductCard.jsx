@@ -25,7 +25,6 @@ import { useState } from "react";
 
 const ProductCard = ({ product }) => {
     const [updatedProduct, setUpdatedProduct] = useState(product);
-    const [isProcessing, setIsProcessing] = useState(false);
 
     const textColor = useColorModeValue("gray.600", "gray.200");
     const bg = useColorModeValue("white", "gray.800");
@@ -35,40 +34,46 @@ const ProductCard = ({ product }) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
 
     const handleDeleteProduct = async (pid) => {
-        setIsProcessing(true);
         const { success, message } = await deleteProduct(pid);
-        setIsProcessing(false);
-        toast({
-            title: success ? "Success" : "Error",
-            description: message,
-            status: success ? "success" : "error",
-            duration: 3000,
-            isClosable: true,
-        });
-    };
-
-    const handleUpdateProduct = async () => {
-        if (!updatedProduct.name || updatedProduct.price <= 0 || !updatedProduct.image) {
+        if (!success) {
             toast({
                 title: "Error",
-                description: "Please provide valid inputs.",
+                description: message,
                 status: "error",
                 duration: 3000,
                 isClosable: true,
             });
-            return;
+        } else {
+            toast({
+                title: "Success",
+                description: message,
+                status: "success",
+                duration: 3000,
+                isClosable: true,
+            });
         }
-        setIsProcessing(true);
-        const { success, message } = await updateProduct(product._id, updatedProduct);
-        setIsProcessing(false);
+    };
+
+    const handleUpdateProduct = async (pid, updatedProduct) => {
+        const { success, message } = await updateProduct(pid, updatedProduct);
         onClose();
-        toast({
-            title: success ? "Success" : "Error",
-            description: success ? "Product updated successfully" : message,
-            status: success ? "success" : "error",
-            duration: 3000,
-            isClosable: true,
-        });
+        if (!success) {
+            toast({
+                title: "Error",
+                description: message,
+                status: "error",
+                duration: 3000,
+                isClosable: true,
+            });
+        } else {
+            toast({
+                title: "Success",
+                description: "Product updated successfully",
+                status: "success",
+                duration: 3000,
+                isClosable: true,
+            });
+        }
     };
 
     return (
@@ -92,19 +97,11 @@ const ProductCard = ({ product }) => {
                 </Text>
 
                 <HStack spacing={2}>
-                    <IconButton
-                        icon={<EditIcon />}
-                        onClick={onOpen}
-                        colorScheme='blue'
-                        aria-label="Edit Product"
-                        isDisabled={isProcessing}
-                    />
+                    <IconButton icon={<EditIcon />} onClick={onOpen} colorScheme='blue' />
                     <IconButton
                         icon={<DeleteIcon />}
                         onClick={() => handleDeleteProduct(product._id)}
                         colorScheme='red'
-                        aria-label="Delete Product"
-                        isLoading={isProcessing}
                     />
                 </HStack>
             </Box>
@@ -129,7 +126,6 @@ const ProductCard = ({ product }) => {
                                 type='number'
                                 value={updatedProduct.price}
                                 onChange={(e) => setUpdatedProduct({ ...updatedProduct, price: e.target.value })}
-                                min={0}
                             />
                             <Input
                                 placeholder='Image URL'
@@ -144,12 +140,11 @@ const ProductCard = ({ product }) => {
                         <Button
                             colorScheme='blue'
                             mr={3}
-                            onClick={handleUpdateProduct}
-                            isLoading={isProcessing}
+                            onClick={() => handleUpdateProduct(product._id, updatedProduct)}
                         >
                             Update
                         </Button>
-                        <Button variant='ghost' onClick={onClose} isDisabled={isProcessing}>
+                        <Button variant='ghost' onClick={onClose}>
                             Cancel
                         </Button>
                     </ModalFooter>
@@ -158,5 +153,4 @@ const ProductCard = ({ product }) => {
         </Box>
     );
 };
-
 export default ProductCard;

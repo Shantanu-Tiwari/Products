@@ -1,35 +1,16 @@
-import { Container, SimpleGrid, Text, VStack, Spinner } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { Container, SimpleGrid, Text, VStack } from "@chakra-ui/react";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useProductStore } from "../store/product";
-import ProductCard from "@/parts/ProductCard.jsx";
+import ProductCard from "../components/ProductCard";
 
 const HomePage = () => {
     const { fetchProducts, products } = useProductStore();
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
 
     useEffect(() => {
-        const getProducts = async () => {
-            try {
-                await fetchProducts();
-            } catch (err) {
-                setError("Failed to fetch products.");
-            } finally {
-                setLoading(false);
-            }
-        };
-        getProducts();
+        fetchProducts();
     }, [fetchProducts]);
-
-    if (loading) {
-        return (
-            <Container maxW='container.xl' py={12} textAlign="center">
-                <Spinner size="xl" />
-                <Text mt={4}>Loading products...</Text>
-            </Container>
-        );
-    }
+    console.log("products", products);
 
     return (
         <Container maxW='container.xl' py={12}>
@@ -68,15 +49,8 @@ const HomePage = () => {
                         </Link>
                     </Text>
                 )}
-
-                {error && (
-                    <Text fontSize="xl" textAlign="center" color="red.500">
-                        {error}
-                    </Text>
-                )}
             </VStack>
         </Container>
     );
 };
-
 export default HomePage;

@@ -1,5 +1,6 @@
 import { Button, Container, Flex, HStack, Text, useColorMode } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
+
 import { PlusSquareIcon } from "@chakra-ui/icons";
 import { IoMoon } from "react-icons/io5";
 import { LuSun } from "react-icons/lu";
@@ -17,10 +18,9 @@ const Navbar = () => {
                     base: "column",
                     sm: "row",
                 }}
-                gap={{ base: 4, sm: 0 }} // Add spacing for small screens
             >
                 <Text
-                    fontSize={{ base: 22, sm: 28 }}
+                    fontSize={{ base: "22", sm: "28" }}
                     fontWeight={"bold"}
                     textTransform={"uppercase"}
                     textAlign={"center"}
@@ -32,17 +32,16 @@ const Navbar = () => {
 
                 <HStack spacing={2} alignItems={"center"}>
                     <Link to={"/create"}>
-                        <Button aria-label="Create Product">
+                        <Button>
                             <PlusSquareIcon fontSize={20} />
                         </Button>
                     </Link>
-                    <Button onClick={toggleColorMode} aria-label="Toggle Color Mode">
-                        {colorMode === "light" ? <IoMoon size={20} /> : <LuSun size={20} />}
+                    <Button onClick={toggleColorMode}>
+                        {colorMode === "light" ? <IoMoon /> : <LuSun size='20' />}
                     </Button>
                 </HStack>
             </Flex>
         </Container>
     );
 };
-
 export default Navbar;
